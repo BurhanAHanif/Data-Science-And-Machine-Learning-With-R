@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 title: "Lab 3"
 author: Burhan Ahmed Hanif 
 output: pdf_document
@@ -106,21 +111,20 @@ y_binary = as.numeric(Xy_simple$response == 1)
 Use the `e1071` package to fit an SVM model to `y_binary` using the features in `X_simple_feature_matrix`. Do not specify the $\lambda$ (i.e. do not specify the `cost` argument). Call the model object `svm_model`. Otherwise the remaining code won't work.
 
 ```{r}
-svm_model = #TO-DO
+#svm_model = #TO-DO
 ```
 
 and then use the following code to visualize the line in purple:
 
 ```{r}
-w_vec_simple_svm = c(
-  svm_model$rho, #the b term
-  -t(svm_model$coefs) %*% X_simple_feature_matrix[svm_model$index, ] # the other terms
-)
-simple_svm_line = geom_abline(
-    intercept = -w_vec_simple_svm[1] / w_vec_simple_svm[3], 
-    slope = -w_vec_simple_svm[2] / w_vec_simple_svm[3], 
-    color = "purple")
-simple_viz_obj + simple_perceptron_line + simple_svm_line
+#w_vec_simple_svm = c(
+#  svm_model$rho, #the b term
+#  -t(svm_model$coefs) %*% X_simple_feature_matrix[svm_model$index, ] # the other terms)
+#simple_svm_line = geom_abline(
+#    intercept = -w_vec_simple_svm[1] / w_vec_simple_svm[3], 
+#    slope = -w_vec_simple_svm[2] / w_vec_simple_svm[3], 
+#    color = "purple")
+#simple_viz_obj + simple_perceptron_line + simple_svm_line
 ```
 
 Is this SVM line a better fit than the perceptron?
@@ -173,14 +177,14 @@ linear_svm_learning_algorithm = function(Xinput, y_binary, MAX_ITER = 5000, lamb
 
 If you wrote code (the extra credit), run your function using the defaults and plot it in brown vis-a-vis the previous model's line:
 
-```{r}
+
 svm_model_weights = linear_svm_learning_algorithm(X_simple_feature_matrix, y_binary)
 my_svm_line = geom_abline(
     intercept = svm_model_weights[1] / svm_model_weights[3],#NOTE: negative sign removed from intercept argument here
     slope = -svm_model_weights[2] / svm_model_weights[3], 
     color = "brown")
 simple_viz_obj  + my_svm_line
-```
+
 
 Is this the same as what the `e1071` implementation returned? Why or why not?
 
