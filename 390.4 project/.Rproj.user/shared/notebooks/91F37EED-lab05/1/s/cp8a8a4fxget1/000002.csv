@@ -1,0 +1,4 @@
+"0","data(Boston, package = ""MASS"")"
+"0","y = Boston$medv"
+"0","X = as.matrix(cbind(1, Boston[, 1 : 13]))"
+"0","colnames(X)[1] = ""(Intercept)"""

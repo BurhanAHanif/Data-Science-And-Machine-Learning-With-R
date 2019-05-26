@@ -1,0 +1,3 @@
+"0","e = y - yhat"
+"0","e_2 = H_comp %*% y"
+"0","expect_equal(e, e_2)"

@@ -1,0 +1,3 @@
+"0","pacman :: p_load(testthat)"
+"0","expect_equal(H , H%*%H, tolerance = 1e-2)"
+"0","expect_equal(H, t(H), tolerance = 1e-2)"

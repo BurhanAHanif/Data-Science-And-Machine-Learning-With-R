@@ -1,0 +1,7 @@
+"0","X = cbind(X , rnorm(X))"
+"2","number of rows of result is not a multiple of vector length (arg 2)"
+"0","summary(lm(y~X)) $r.squared"
+"1","[1]"
+"1"," 0.7416613"
+"1","
+"
