@@ -1,0 +1,369 @@
+Burhan A Hanif 
+
+Collaborators 
+Vincent Miceli
+Adriana Sham 
+Sakib Salim
+Juan Diego Astudillo
+
+<!-- 				An attempt to beat Zestimates  -->
+<!-- A model is a systematic description of a phenomenon that shares valid and important Characteristics of its causation. Prediction model takes important features as inputs of the data-set to calculate if the output is valid given these features.  For this project a prediction model will learn from the features (x’s) and predict the (y’s) and the quantify the errors. The model will predict a future or new entry of an apartment selling price in Queens New York. The training of this model we used the raw data of Queens Apartments for sale from 2016 to 2017 scrapped from MLSLI using MTurk. -->
+<!--       We used three algorithms for prediction of the Sale Price Linear Model, Regression Tree Model and Random Forest Model. Our raw Data started with 55 features after removing irrelevant features from the data-set to 25 and after featurization we concluded that with these 35 features we will get better performance with our chosen algorithms.  -->
+<!-- 	The Linear model helped us understand the influence that each independent variable has on our dependent variable (Sale Price). Regression Tree Modeling assisted us to find more substantial ways to make splits on the data. It gave us results a tree with decision nodes and leaf nodes depending on the regressions, finally Random Forests returned splits based on the creation of multiple decision trees that merged together to give us a more accurate and stable predictions. -->
+<!-- The data provided for this project class comes from a collection of listing sale prices out of the portal Multiple Listing Services.  The raw data contains 2230 unique observations (n). It includes 55 zip codes from Queens excluding Rockaways, a peninsula near JFK airport that is geographically distinct from the rest of the neighborhoods in Queens, NY. The population of interest are apartments in Queens county and our model will be able to predict the price. The dataset is a partial representation of the entire population because it represents a small sample size of Queens with the zip-codes. Certain features have a causation for Sale price and others have been cleaned for their usefulness.  Some features are taken out since they were not relevant to our prediction model. We did not use external sources for features, but we created extra variables based on the features that were already provided.  -->
+<!-- “Different models extrapolate differently” there are dangers of extrapolation predicting outside the range of our features. A feature such as zip-code, apartments in different zip-codes could be valued higher or even lower having a dependence on school district and crime per capita. Apartment size per square foot can be valued high in a certain building because of the facilities the building provides. Being outside the range for bedrooms and bathrooms our model will not be able to predict for 4, 5, 6 bedrooms because they can be valued exponentially higher than 0,1,2,3 our model is predicting.  -->
+<!-- The dataset had some outliers that were fixed with help of featurization. For example, there was house worth close to $1M. Another example total tax had a range of $11 to $9300. We had to make those changes manually making them NA’s because our model will not account on those weird cases, it will predict poorly on them. In addition, observations had entry errors such as misspelled words. We edited the data in MS Excel and in our code. -->
+
+<!-- # approx_year_built: integer; prewar built would be concrete walls, and brick outside, old elevators and the ones built in the modern ones that are built would be wood with new elevators. This would affect the maintenance cost.  -->
+<!-- #community_district_num: integer; determines school districts more expensive for better school district.  -->
+<!-- #coop_condo: factor; apartments that are either coops or condos. coops are those that have more community charges, you don't own the apartment, however, you own a stock in the corporation that owns the building. To buy co-ops, you must be approved by the corporation board. Co-ops also have less freedom in renting or subletting. Co-ops are also cheaper then condos. In Comparison to co-ops a condo is owned by the person and has the freedom to make the changes in the floor plans also can rent or sublet the apartment. The condos are almost 2x as expensive than a co-op. Adds higher sale price to the condo  -->
+<!-- #dining_room_type: factor; this was factorial and was combo, formal or other. Add more to the sale price if more space and fancier. -->
+<!-- #garage_exists: factor; existence of garage in the coop/condo. Having a parking spot would add value to the sale price.  -->
+<!-- #kitchen_type: factor; the feature was a factor, but we made it into two different kinds "eat in" and "efficiency" or none.   -->
+<!-- #num_bedrooms: integer; number of bedrooms in the coop/condo, more bedrooms add value to the sale price. -->
+<!-- #num_floors_in_building: integer; number of floors in the coop/condo higher floors for views more value added to the sale price. -->
+<!-- #num_full_bathrooms: integer; number of full bathrooms in the coop/condo more bathrooms mean more square foot in the apartment and adds value to the sale price. -->
+<!-- #num_half_bathrooms: integer; number of half bathrooms in the coop/condo. It adds more value because of space and convenience but not as much as full bathrooms.   -->
+<!-- #num_total_rooms: integer; number of total rooms in the coop/condo. Amount of rooms as a total beneficial of how the apartment is built.   -->
+<!-- #parking_charges: factor; the charge for the parking space in the coop/condo. Being if the parking charges are higher the value of the sale price can be decreased.  -->
+<!-- #pct_tax_deductibl: integer; the percentage of tax deduction you can take for owning the property (Tax deductible income). This adds value to the price.  -->
+<!-- #sale_price: factor; the price that the coop/condo was sold for our (Y) what we are predicting for,  -->
+<!-- #sq_footage: integer; the size of the apartment by square feet. High sq/ft adds more to the sale price.  -->
+<!-- #total_taxes: factor; the property tax charged by the local government higher value brings down sale price.  -->
+<!-- #walk_score: integer; Metric created by the MLSI, it is the walk to the nearby stores, parks, closest subway.  -->
+<!-- #we extracted zip_code from the full address  -->
+<!-- #we made the collinearity of dogs allowed and cats allowed into one variable of pets allowed so we got rid of cats and dogs allowed  -->
+<!-- #we made Coop-condo into a factor variable because we made a change back from binary.  -->
+<!-- # we made maintenance cost and common charges into one numeric variable named monthly cost because these are monthly dues for coops and condos and are mutually exclusive. Then after making the new variable we dropped the two maintence cost and common charges. -->
+<!-- # garage exists to binary variable 0,1 and then turning 0s from NAs to 0 because if they were not listed as yes then they were probably NO.  -->
+<!-- We had to make changes to variable types because the excel file was not reading them as that. In the following code we made changes of variables. We mutated the dining rooms as a factor for its different types. The reason we are changing to character first and then to numeric second for the same variable different times was because as charter we would get a garbage entry. Garage exists, parking charges , sales price , total taxes and price per/sq foot.    -->
+<!-- We created another feature from full address and zip code to a continuous numeric variable of latitude and longitude. We used the package ggmap and the function geocode for calculating these but before we had to edit the excel document to make corrections to addresses. The reason was to give us exact location instead of zip-code which can be anywhere in the 4- or 5-mile radius.  We also used latitude and longitude for the closest LIRR Train station distances for fastest way to Midtown Manhattan by public transportation. Then remove the address and zip-code because it is redundant now. Remove the listing price because we put in price per square-foot.  -->
+<!-- Created another temporary variable column-id so we can keep track of the of the real y after separating the y-vector for running Miss forest. After running miss forest bring back the y vector to its real rows. Then we spilt the data into (Xtrain, Ytrain) and (Xtest, Ytest) with a spilt of 80-20 so we can train on the 80% and validate on the 20%. Comparing the in-sample error with our out of sample error. -->
+<!-- The development of the M matrix with p columns that represents missingness before we run missing forest. The reason for this matrix is because the data is missing and it’s taking account of the missingness too see the effects that it takes after running the algorithms. We took out the colinear entries and the features that did not have the missingness.  -->
+<!-- We ran the miss forest on the data without the Y vector because or else it would have calculated the garbage y’s. After the implementation of the of Miss forest we merged the y’s back to their proper rows using the temp variable and then deleted the temp variable.  -->
+<!--  Regression tree produced these 6 for the splits:  coop-condo, square footage, price per sq/ft, parking charges, latitude and monthly costs.  The difference between coop-condo was obvious because the price has almost a difference of 2x the times of the condo. Square footage spilt means the bigger the apartment the higher the sale price. The higher the parking charges for the apartment the higher price would be.  The latitude if higher would be more north and northern properties are usually more expensive. The higher the monthly costs for the apartment would mean the nicer the building and it would have more features.  -->
+<!-- 	For Linear regression we ran Ytrain onto Xtrain to get the in-sample fit. Our R^2 was 85% our RMSE was 72,000. The coefficient for coop-condo was 17000, the price for square foot 47,540, latitude 67,000, monthly charges were 163 and parking charges were 395. Like our regression tree these features were important linear model as they had high coefficients.  -->
+<!-- The random forest gave us the best predictions our RMSE was 70,000 and our R^2 was 85%. They can compute different variable types such factors, binary, numeric etc. The algorithm has built in optimizations for decisions and the they are able to find the best splits in the data minimizing the error.  For our future predictions it would perform okay but not great since it is 70,000 of from the price and the R^2 was 85%.  -->
+<!-- 	In conclusion we could have performed better if we had more observations in our dataset. We only had 528 real n observations the rest of the data-set was missing the sale price our y’s. We could have run miss forest on the missing y’s but that would have been dishonest.  It is strange that our linear model was as good as random forest model. If we to include interactions and square terms we could almost certainly beat random forest. To take it a step further we could run forward stepwise that would find the optimal features including interactions, those would be able to create curves instead of a simple line which would fit y much closer.    -->
+
+title: "Term Project 390.4- 2019"
+output:
+  word_document: default
+  pdf_document: default
+Author: Juan D Astudillo, Vincent Miceli, Adriana Sham, Burhan Hanif, Sakib Salim
+---
+
+## R Markdown
+
+```{r}
+pacman::p_load(dplyr, tidyr, ggplot2, magrittr, stringr, mlr)
+housing_data = read.csv("housing_data_2016_2017.csv")
+```
+
+##Delete variables that we dont need
+```{r}
+housing_data %<>%
+  select(-c(HITId, HITTypeId, Title, Description, Keywords, Reward, CreationTime, MaxAssignments,	RequesterAnnotation,	AssignmentDurationInSeconds,	AutoApprovalDelayInSeconds,	Expiration,	NumberOfSimilarHITs, LifetimeInSeconds,	AssignmentId,	WorkerId,	AssignmentStatus,	AcceptTime,	SubmitTime,	AutoApprovalTime,	ApprovalTime,	RejectionTime,	RequesterFeedback,	WorkTimeInSeconds, LifetimeApprovalRate,	Last30DaysApprovalRate,	Last7DaysApprovalRate, URL, url, date_of_sale))
+```
+## Clean Data
+```{r}
+housing_data %<>%
+  mutate( zip_code = str_extract(full_address_or_zip_code, "[0-9]{5}")) 
+housing_data %<>%
+  mutate(dogs_allowed = ifelse(substr(housing_data$dogs_allowed, 1, 3) == "yes", 1, 0)) %>%
+  mutate(cats_allowed = ifelse(substr(housing_data$cats_allowed, 1, 3) == "yes", 1, 0)) %>%
+  mutate( pets_allowed = ifelse( cats_allowed + dogs_allowed > 0, 1, 0)) %>%
+  mutate(coop_condo = factor(tolower(coop_condo)))
+housing_data %<>%
+  select(-c(dogs_allowed,cats_allowed, fuel_type))
+d = housing_data
+d %<>%
+  mutate(maintenance_cost = sjmisc::rec(maintenance_cost, rec = "NA = 0 ; else = copy")) %<>%
+  mutate(common_charges = sjmisc::rec(common_charges, rec = "NA = 0 ; else = copy"))##recode from NA to 0.
+# combine maintaince cost and common charges
+d %<>% 
+  mutate( monthly_cost = common_charges + maintenance_cost)
+d %<>%
+  mutate(monthly_cost = sjmisc::rec(monthly_cost, rec = "0 = NA ; else = copy"))
+## Garage exists conver it to binary
+d %<>%
+  mutate(garage_exists = sjmisc::rec(garage_exists, rec = "NA = 0 ; else = copy")) ##recode from NA to 0. 
+d %<>%
+  mutate(garage_exists = sjmisc::rec(garage_exists, rec = " eys = 1; UG = 1 ; Underground = 1; yes = 1 ; Yes = 1 ; else = copy")) ##recode from NA to 0.
+d %<>%
+  select(-c(maintenance_cost , common_charges, model_type))
+str(d)
+```
+
+##Change variable type 
+```{r}
+d %<>%
+  mutate( dining_room_type = as.factor(dining_room_type)) %>%
+  mutate(garage_exists = as.character(garage_exists)) %>%
+  mutate(garage_exists = as.numeric(garage_exists)) %>%
+  mutate( parking_charges = as.character(parking_charges)) %>%
+  mutate( parking_charges = as.numeric(parking_charges)) %>%
+  mutate(sale_price = as.character(sale_price)) %>%
+  mutate(sale_price = as.numeric(sale_price)) %>%
+  mutate(total_taxes = as.character(total_taxes)) %>%
+  mutate(total_taxes = as.numeric(total_taxes)) %>%
+  mutate(price_persqft = listing_price_to_nearest_1000 / sq_footage)
+  
+```
+
+
+#Added latitude and longitude features using ggmap
+
+```{r error = TRUE}
+#Already run and included in the data
+#pacman::p_load(ggmap)
+#d %<>%
+#  mutate(lat = geocode(full_address_or_zip_code)$lat, lon = #geocode(full_address_or_zip_code)$lon )
+#geocoordinates for relevant LIRR stations
+lirr_coord = read.csv("coord.csv")
+RAD_EARTH = 3958.8
+degrees_to_radians = function(angle_degrees){
+  for(i in 1:length(angle_degrees))
+    angle_degrees[i] = angle_degrees[i]*pi/180
+  return(angle_degrees)
+}
+compute_globe_distance = function(destination, origin){
+  destination_rad = degrees_to_radians(destination)
+  origin_rad = degrees_to_radians(origin)
+  delta_lat = destination_rad[1] - origin_rad[1]
+  delta_lon = destination_rad[2] - origin_rad[2]
+  h = (sin(delta_lat/2))^2 + cos(origin_rad[1]) * cos(destination_rad[1]) * (sin(delta_lon/2))^2
+  central_angle = 2 * asin(sqrt(h))
+  return(RAD_EARTH * central_angle)
+}
+#find the closest LIRR station and compute distance
+shortest_lirr_distance = function(all_lirr_coords, house_coords){
+  shortest_dist = Inf
+  for (i in 1: nrow(all_lirr_coords)){
+    ith_lirr = c(all_lirr_coords$lat[i], all_lirr_coords$lon[i])
+    new_dist = compute_globe_distance(ith_lirr, house_coords)
+    if( new_dist < shortest_dist){
+      shortest_dist = new_dist
+    }
+  }
+  return(shortest_dist)
+}
+d %<>%
+  rowwise() %>%
+  mutate(shortest_dist = shortest_lirr_distance(lirr_coord, c(lat, lon)) )
+#makes any other addresses redundant
+d %<>%
+  select(-c(zip_code, full_address_or_zip_code, listing_price_to_nearest_1000))
+```
+
+We are trying to predict `sale_price`. So let's section our dataset:
+
+```{r}
+####CREATE A COLUMN ID
+d %<>%
+  ungroup(d) %>%
+  mutate(id = 1 : 2230)
+d %<>%
+  mutate(total_taxes = ifelse(d$total_taxes < 1000, NA, total_taxes))
+real_y = data.frame(d$id, d$sale_price)
+real_d = subset(d, (!is.na(d$sale_price)))
+fake_d = subset(d, (is.na(d$sale_price)))
+real_d$sale_price = NULL
+fake_d$sale_price = NULL
+```
+#Split the data that has y into train and test sets
+
+```{r}
+train_indices = sample(1 : nrow(real_d), nrow(real_d)*4/5)
+training_data = real_d[train_indices, ]
+testing_data = real_d[-train_indices, ]
+X = rbind(training_data, testing_data, fake_d)
+```
+
+#Let's first create a matrix with $p$ columns that represents missingness
+
+```{r}
+M = tbl_df(apply(is.na(X), 2, as.numeric))
+colnames(M) = paste("is_missing_", colnames(X), sep = "")
+```
+
+#Some of these missing indicators are collinear because they share all the rows they are missing on. Let's filter those out:
+
+```{r}
+M = tbl_df(t(unique(t(M))))
+```
+
+
+#Some featuers did not have missingness so let's remove them:
+
+```{r}
+M %<>% select_if(function(x){sum(x) > 0})
+```
+
+Now let's impute using the package. we cannot fit RF models to the entire dataset (it's 26,000! observations) so we will sample 5 for X1 and  for each of the trees and then average. That will be good enough.
+
+```{r}
+pacman::p_load(missForest)
+Ximp = missForest(data.frame(X), sampsize = rep(172, ncol(X)))$ximp
+```
+
+
+```{r}
+Ximp %<>%
+  arrange(id)
+Xnew = data.frame(cbind(Ximp, M, real_y))
+Xnew %<>%
+  mutate(price = d.sale_price) %>%
+  select(-c(id, d.id, d.sale_price))
+  
+linear_mod_impute_and_missing_dummies = lm(price ~ ., data = Xnew)
+summary(linear_mod_impute_and_missing_dummies)
+```
+
+
+### REMOVING MISSING Y SECTION
+```{r}
+Data = Xnew
+### sale price is our imputed Y
+Y = Data$price
+Data %<>%
+  filter(!is.na(price)) %>%
+  select(-price)
+Xtrain = Data[1:422, ]
+Xtest = Data[423:528, ]
+Ytrain = Y[1:422]
+Ytest = Y[423:528]
+dtrain = cbind(Xtrain, Ytrain) ## combine x train with y train, x test with y test
+dtest = cbind(Xtest, Ytest)
+```
+
+## Dropping colinear features
+
+```{r}
+Xtrain %<>%
+  select(-c(is_missing_num_total_rooms, is_missing_num_bedrooms, is_missing_price_persqft))
+```
+
+Linear Regression
+
+
+```{r}
+linear = lm(Ytrain ~ ., data = Xtrain)## simple linear model
+summary(linear)
+```
+
+
+```{r}
+yhat = predict(linear, Xtest)
+e = yhat - Ytest
+sqrt(sum(e^2) / nrow(Xtest))
+```
+
+```{r}
+#REGRESSION TREE
+pacman::p_load(rsample)#data spliting
+pacman::p_load(rpart) #performing reg tree
+pacman::p_load(rpart.plot) #ploting reg tree
+pacman::p_load(ipred) #bagging
+pacman::p_load(caret) #bagging
+m1 = rpart(
+  formula = Ytrain ~ .,
+  data    = Xtrain,
+  method  = "anova"
+  )
+rpart.plot(m1)
+plotcp(m1)
+summary(m1)
+yhat = predict(m1, Xtest)
+e = yhat - Ytest
+sqrt(sum(e^2)/106)
+```
+ 
+```{r}
+m2 <- rpart(
+    formula = Ytrain ~ .,
+    data    = Xtrain,
+    method  = "anova", 
+    control = list(cp = 0, xval = 10)
+)
+rpart.plot(m2)
+plotcp(m2)
+yhat = predict(m2, Xtest)
+e = yhat - Ytest
+sqrt(sum(e^2)/106)
+jpeg(file = "save_m2.jpeg")
+```
+
+ 
+```{r}
+###Tuning
+m3 <- rpart(
+    formula = Ytrain ~ .,
+    data    = Xtrain,
+    method  = "anova", 
+    control = list(minsplit = 10, maxdepth = 12, xval = 10)
+)
+yhat = predict(m3, Xtest)
+e = yhat - Ytest
+sqrt(sum(e^2)/106)
+m3$cptable
+```
+
+
+```{r}
+# function to get optimal cp
+get_cp <- function(x) {
+  min    <- which.min(x$cptable[, "xerror"])
+  cp <- x$cptable[min, "CP"] 
+}
+# function to get minimum error
+get_min_error <- function(x) {
+  min    <- which.min(x$cptable[, "xerror"])
+  xerror <- x$cptable[min, "xerror"] 
+}
+```
+
+```{r}
+optimal_tree <- rpart(
+    formula = Ytrain ~ .,
+    data    = Xtrain,
+    method  = "anova",
+    control = list(minsplit = 11, maxdepth = 8, cp = 0.01)
+    )
+pred <- predict(optimal_tree, newdata = Xtrain)
+RMSE(pred = pred, obs = Ytrain)
+```
+
+
+##RANDOM FORESTS
+
+```{r}
+m1 <- randomForest(
+  formula = Ytrain ~ .,
+  data    = Xtrain
+)
+m1
+which.min(m1$mse)
+# RMSE of this optimal random forest
+sqrt(m1$mse[which.min(m1$mse)])
+```
+
+
+```{r}
+features <- setdiff(names(Xtrain), Ytrain)
+set.seed(1989)
+m2 <- tuneRF(
+  x          = Xtrain,
+  y          = Ytrain,
+  ntreeTry   = 500,
+  mtryStart  = 5,
+  stepFactor = 1.5,
+  improve    = 0.01,
+  trace      = FALSE      # to not show real-time progress 
+)
+```
+
+
+
+
+
